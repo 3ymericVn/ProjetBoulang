@@ -1,77 +1,74 @@
-import flet as ft 
-from flet import TextField, Checkbox, ElevatedButton, Text, Row, Column
-from flet import ControlEvent
-import sqlite3
+import flet as ft
 
-def main(page: ft.Page) -> None:
-    with sqlite3.connect('oui.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS test (
-                oui TEXT
-            )
-        ''')
-        cursor.execute('''
-            INSERT INTO test (oui) VALUES ('oui zizi')
-        ''')
-        conn.commit()
-    page.title = 'SignUp'
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+def main(page: ft.Page):
+    page.title = "Floating Action Button"
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.window_with = 400
-    page.window_height = 400
-    page.windows_resizable = False
-    
-    text_username: TextField = TextField(label='username', text_align=ft.TextAlign.LEFT, width=200)
-    text_password: TextField = TextField(label='password', text_align=ft.TextAlign.LEFT, width=200, password=True)
-    checkbox_signup : Checkbox = Checkbox(label='Jaccpete connard', value=False)
-    button_submit : ElevatedButton = ElevatedButton(text='Sign up', width=200,disabled=True)
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.padding = 0
 
-    def validate(e: ControlEvent) -> None:
-        if all([text_username.value , text_password.value, checkbox_signup.value]):
-            button_submit.disabled = False
-        else:
-            button_submit.disabled = True
-        page.update()
 
-    def submit(e: ControlEvent) -> None:
-        print('Username', text_username.value)
-        print('Username', text_username.value)
-        with sqlite3.connect('oui.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT * FROM test
-            ''')
-            text = [i for i in cursor.fetchall()]
-            conn.commit()
-        text = text[0][0]
-        page.clean()
-        page.add(
-            Row(
-                controls=[Text(value=f'Welcome : {text_username.value} {text}',size=20)],
-                alignment=ft.MainAxisAlignment.CENTER
-            )
-        )
-    checkbox_signup.on_change = validate
-    text_username.on_change = validate
-    text_password.on_change = validate
-    button_submit.on_click = submit
+    def fab_pressed(e):
+        def validate_input(e):
+            if all([nom.value, prenom.value, mail.value]):
+                submit.disabled = False
+            else:
+                submit.disabled = True
+            page.update()
 
-    page.add(
-        Row(
-            controls=[
-                Column(
-                    [text_username,
-                     text_password,
-                     checkbox_signup,
-                     button_submit]
+        nom = ft.TextField(label="Nom", on_change=validate_input)
+        prenom = ft.TextField(label="Prenom", on_change=validate_input)
+        mail = ft.TextField(label="Mail", on_change=validate_input)
+        submit = ft.ElevatedButton(text="Ajouter", on_click=lambda x: add_list_tile(x), disabled=True)
+
+        def add_list_tile(e):
+            page.close(dlg)
+            page.add(
+                ft.ListTile(
+                    title=ft.Text(f"{nom.value} {prenom.value} {mail.value}"),
+                    bgcolor=ft.Colors.TEAL_300,
+                    leading=ft.Icon(
+                        ft.Icons.CIRCLE_OUTLINED, color=ft.Colors.DEEP_ORANGE_300
+                    ),
+                    on_click=lambda x: print(x.control.title.value + " was clicked!"),
                 )
-            ],
-            alignment=ft.MainAxisAlignment.CENTER
-        )
+            )
+            page.open(ft.SnackBar(ft.Text("Tile was added successfully!")))
+        
+
+        dlg = ft.AlertDialog(
+            title=ft.Text("Tile was added successfully!"),
+            content=ft.Text("Tile was added successfully!"),
+            actions_overflow_button_spacing=10,
+            actions=[
+                nom,
+                prenom,
+                mail,
+                submit
+            ]
+        ) 
+        page.open(dlg)
+
+
+    page.floating_action_button = ft.FloatingActionButton(
+        icon=ft.Icons.ADD, on_click=fab_pressed, bgcolor=ft.Colors.LIME_300
+    )
+    page.add(
+        ft.Container(
+            ft.Row(
+                [
+                    ft.Text(
+                        "Floating Action Button Example",
+                        style=ft.TextStyle(size=20, weight=ft.FontWeight.W_500),
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
+            bgcolor=ft.Colors.BLUE,
+            padding=ft.padding.all(20),
+        ),
+        ft.Text("Press the FAB to add a tile!"),
     )
 
 
-if __name__ == '__main__':
-    ft.app(target=main)
-
+ft.app(main)
