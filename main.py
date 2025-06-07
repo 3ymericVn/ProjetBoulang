@@ -1,5 +1,5 @@
 import flet as ft
-from assets import create_add_button
+from assets import create_add_button, add_client_tile
 from db.utils import init_db, search_client, get_clients
 
 def main(page: ft.Page):
@@ -13,39 +13,41 @@ def main(page: ft.Page):
     clients = get_clients()
 
     def on_change(e):
-        search_results = search_client(e.control.value)
-        print(len(search_results))
+        search_results = search_client(search.value)
         lv.controls.clear()
         for client in search_results:
+            prenom = client['prenom']
+            nom = client['nom']
+            mail = client['mail']
             lv.controls.append(
-                ft.ListTile(
-                    title=ft.Text(f"{client['nom']} {client['prenom']}"),
-                    subtitle=ft.Text(client["mail"]),
-                    on_click=lambda x: print(f"{client['nom']} {client['prenom']} clicked!")
+                ft.Container(   
+                    content=ft.ListTile(
+                        leading=ft.CircleAvatar(
+                            content=ft.Text(nom[0].upper()),
+                            bgcolor=ft.Colors.DEEP_ORANGE_300,
+                            radius=20,
+                        ),
+                        title=ft.Text(f"{prenom} {nom}", size=18, weight=ft.FontWeight.BOLD),
+                        subtitle=ft.Text(mail, size=14, italic=True),
+                        on_click=lambda x: print(f"{prenom} {nom} clicked!"),
+                    ),
+                    bgcolor=ft.Colors.TEAL_100,
+                    border_radius=12,
+                    padding=10,
+                    margin=5
                 )
             )
         page.update()
 
-    def on_tap(e):
-        search.open_view()
     
-    lv = ft.ListView(
-        ft.ListTile(
-            title=ft.Text(f"{client['nom']} {client['prenom']}"),
-            subtitle=ft.Text(client["mail"]),
-            on_click=lambda x: print(f"{client['nom']} {client['prenom']} clicked!")
-        )
-        for client in clients
+    lv = ft.ListView(spacing=10)
+    lvc = ft.Container(
+        content=lv
     )
-    search = ft.SearchBar(
-        bar_hint_text="Rechercher un client",
+    search = ft.TextField(
+        label="Rechercher un client",
         on_change=on_change,
-        on_tap=on_tap,
         expand=True,
-        view_elevation=4,
-        controls=[
-            lv
-        ]
     )
     page.add(
         ft.Container(
@@ -59,6 +61,28 @@ def main(page: ft.Page):
             padding=ft.padding.all(20),
         ),
     )
-
+    for client in clients:
+        prenom = client['prenom']
+        nom = client['nom']
+        mail = client['mail']
+        lv.controls.append(
+            ft.Container(   
+                content=ft.ListTile(
+                    leading=ft.CircleAvatar(
+                        content=ft.Text(nom[0].upper()),
+                        bgcolor=ft.Colors.DEEP_ORANGE_300,
+                        radius=20,
+                    ),
+                    title=ft.Text(f"{prenom} {nom}", size=18, weight=ft.FontWeight.BOLD),
+                    subtitle=ft.Text(mail, size=14, italic=True),
+                    on_click=lambda x: print(f"{prenom} {nom} clicked!"),
+                ),
+                bgcolor=ft.Colors.TEAL_100,
+                border_radius=12,
+                padding=10,
+                margin=5
+            )
+        )
+    page.add(lvc)
 
 ft.app(main)
