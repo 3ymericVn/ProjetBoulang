@@ -7,17 +7,26 @@ def init_db():
             CREATE TABLE IF NOT EXISTS clients (
                 nom TEXT NOT NULL,
                 prenom TEXT NOT NULL,
-                mail TEXT NOT NULL PRIMARY KEY
+                mail TEXT NOT NULL PRIMARY KEY,
+                solde INTEGER DEFAULT 0
             )
         """)
         conn.commit()
 
-def add_client(nom: str, prenom: str, mail: str):
+def add_client(nom: str, prenom: str, mail: str, solde: int = 0) -> bool:
     with sqlite3.connect("db/clients.db") as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO clients (nom, prenom, mail) VALUES (?, ?, ?)", (nom, prenom, mail))
+        try:
+            cursor.execute(
+                "INSERT INTO clients (nom, prenom, mail, solde) VALUES (?, ?, ?, ?)",
+                (nom, prenom, mail, solde)
+            )
+        except sqlite3.IntegrityError:
+            print(f"Client with mail {mail} already exists.")
+            return False
         conn.commit()
+        return True
 
 def get_clients() -> list[sqlite3.Row]:
     with sqlite3.connect("db/clients.db") as conn:

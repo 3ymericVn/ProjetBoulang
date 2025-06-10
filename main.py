@@ -1,6 +1,6 @@
 import flet as ft
-from assets import create_add_button, add_client_tile
-from db.utils import init_db, search_client, get_clients
+from assets import create_add_button, create_client_card, create_search_bar
+from db import init_db, get_clients
 
 def main(page: ft.Page):
     page.title = "Accueil"
@@ -11,44 +11,13 @@ def main(page: ft.Page):
     init_db()
     page.floating_action_button = create_add_button(page)
     clients = get_clients()
-
-    def on_change(e):
-        search_results = search_client(search.value)
-        lv.controls.clear()
-        for client in search_results:
-            prenom = client['prenom']
-            nom = client['nom']
-            mail = client['mail']
-            lv.controls.append(
-                ft.Container(   
-                    content=ft.ListTile(
-                        leading=ft.CircleAvatar(
-                            content=ft.Text(nom[0].upper()),
-                            bgcolor=ft.Colors.DEEP_ORANGE_300,
-                            radius=20,
-                        ),
-                        title=ft.Text(f"{prenom} {nom}", size=18, weight=ft.FontWeight.BOLD),
-                        subtitle=ft.Text(mail, size=14, italic=True),
-                        on_click=lambda x: print(f"{prenom} {nom} clicked!"),
-                    ),
-                    bgcolor=ft.Colors.TEAL_100,
-                    border_radius=12,
-                    padding=10,
-                    margin=5
-                )
-            )
-        page.update()
-
     
     lv = ft.ListView(spacing=10)
     lvc = ft.Container(
         content=lv
     )
-    search = ft.TextField(
-        label="Rechercher un client",
-        on_change=on_change,
-        expand=True,
-    )
+    search = create_search_bar(page, lv)
+
     page.add(
         ft.Container(
             ft.Row(
@@ -62,26 +31,8 @@ def main(page: ft.Page):
         ),
     )
     for client in clients:
-        prenom = client['prenom']
-        nom = client['nom']
-        mail = client['mail']
         lv.controls.append(
-            ft.Container(   
-                content=ft.ListTile(
-                    leading=ft.CircleAvatar(
-                        content=ft.Text(nom[0].upper()),
-                        bgcolor=ft.Colors.DEEP_ORANGE_300,
-                        radius=20,
-                    ),
-                    title=ft.Text(f"{prenom} {nom}", size=18, weight=ft.FontWeight.BOLD),
-                    subtitle=ft.Text(mail, size=14, italic=True),
-                    on_click=lambda x: print(f"{prenom} {nom} clicked!"),
-                ),
-                bgcolor=ft.Colors.TEAL_100,
-                border_radius=12,
-                padding=10,
-                margin=5
-            )
+            create_client_card(client['nom'], client['prenom'], client['mail'])
         )
     page.add(lvc)
 
