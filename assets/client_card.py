@@ -1,11 +1,21 @@
 import flet as ft
+from db import operate_solde
 
 def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Container:
-    cg = ft.RadioGroup(
+    def on_click(e, radio_value, number_value):
+        if operate_solde(mail, number_value, radio_value):
+            page.close(popup)
+            page.open(ft.SnackBar(ft.Text(f"Le solde de {nom} {prenom} a été modifié.")))
+            page.update()
+        else:
+            page.open(ft.SnackBar(ft.Text("Solde insuffisant !")))
+
+    radio = ft.RadioGroup(
+        value="sub",
         content=ft.Column(
             [
-                ft.Radio(value="add", label="Créditer"),
-                ft.Radio(value="sub", label="Débiter"),
+                ft.Radio(value="sub", label="Débiter", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
+                ft.Radio(value="add", label="Créditer", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
             ]
         )
     )
@@ -14,17 +24,32 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Co
         keyboard_type=ft.KeyboardType.NUMBER,
     )
     popup = ft.AlertDialog(
-        action_button_padding=ft.padding.all(0),
+        shape=ft.RoundedRectangleBorder(radius=5),
         title=ft.Text("Créditer ou débiter ?"),
         content=ft.Column(
             [
-                cg,
+                radio,
                 number_input,
-            ]
+            ],
+            width=400,
+            height=200,
+            spacing=20,
         ),
         actions=[
-            ft.ElevatedButton(text="Créditer", on_click=lambda x: print("Créditer")),
-        ]
+            ft.FilledButton(
+                text="Valider", 
+                on_click=lambda x: on_click(x, radio.value, number_input.value), 
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=5),
+                    padding=ft.Padding(10, 10, 10, 10),
+                    text_style=ft.TextStyle(size=30, weight=ft.FontWeight.BOLD),
+                    bgcolor=ft.Colors.GREEN_300,
+                    color=ft.Colors.BLACK,
+                )
+            ),
+        ],
+        actions_alignment=ft.MainAxisAlignment.CENTER,
+        inset_padding=ft.padding.only(top=20, bottom=20, left=20, right=20)
     )
 
     return ft.Container(

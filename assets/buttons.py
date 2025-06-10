@@ -1,5 +1,6 @@
 import re
 import flet as ft
+from .client_card import create_client_card
 from db import add_client
 
 EMAIL_REGEX = r"^\S+@\S+\.\S+$"
@@ -22,22 +23,7 @@ def fab_pressed(page: ft.Page):
         if not add_client(nom.value, prenom.value, mail.value):
             return page.open(ft.SnackBar(ft.Text("Ce mail est déjà enregistré !")))
         page.add(
-            ft.Container(
-                content=ft.ListTile(
-                    leading=ft.CircleAvatar(
-                        content=ft.Text(nom.value[0].upper()),
-                        bgcolor=ft.Colors.DEEP_ORANGE_300,
-                        radius=20,
-                    ),
-                    title=ft.Text(f"{prenom.value} {nom.value}", size=18, weight=ft.FontWeight.BOLD),
-                    subtitle=ft.Text(mail.value, size=14, italic=True),
-                    on_click=lambda x: print(f"{prenom.value} {nom.value} clicked!"),
-                ),
-                bgcolor=ft.Colors.TEAL_100,
-                border_radius=12,
-                padding=10,
-                margin=5
-            )
+            create_client_card(nom.value, prenom.value, mail.value, page)
         )
 
         page.open(ft.SnackBar(ft.Text("Client ajouté !")))
