@@ -61,6 +61,14 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Co
             ),
             title=ft.Text(f"{nom} {prenom}", size=18, weight=ft.FontWeight.BOLD),
             subtitle=ft.Text(mail, size=14, italic=True),
+            trailing=ft.Column(
+                [
+                    ft.Text(f"0 €", size=14, weight=ft.FontWeight.BOLD),
+                    ft.ElevatedButton(
+                        text="Oui"
+                    )
+                ]
+            ),
             on_click=lambda x: page.open(popup),
         ),
         bgcolor=ft.Colors.TEAL_100,

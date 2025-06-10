@@ -14,7 +14,7 @@ def init_db():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS transactions (
                 mail TEXT NOT NULL,
-                date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                date DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
                 montant FLOAT NOT NULL,
                 operation TEXT NOT NULL,
                 PRIMARY KEY (mail, date),
