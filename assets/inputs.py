@@ -8,7 +8,7 @@ def create_search_bar(page: ft.Page, lv: ft.ListView) -> ft.TextField:
         lv.controls.clear()
         for client in search_results:
             lv.controls.append(
-                create_client_card(client['nom'], client['prenom'], client['mail'])
+                create_client_card(client['nom'], client['prenom'], client['mail'], page)
             )
         page.update()
     search = ft.TextField(

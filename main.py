@@ -32,7 +32,7 @@ def main(page: ft.Page):
     )
     for client in clients:
         lv.controls.append(
-            create_client_card(client['nom'], client['prenom'], client['mail'])
+            create_client_card(client['nom'], client['prenom'], client['mail'], page)
         )
     page.add(lvc)
 

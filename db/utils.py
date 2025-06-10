@@ -8,7 +8,7 @@ def init_db():
                 nom TEXT NOT NULL,
                 prenom TEXT NOT NULL,
                 mail TEXT NOT NULL PRIMARY KEY,
-                solde INTEGER DEFAULT 0
+                solde FLOAT DEFAULT 0.0
             )
         """)
         conn.commit()
