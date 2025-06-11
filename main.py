@@ -9,13 +9,14 @@ def main(page: ft.Page):
     page.padding = 0
 
     init_db()
-    lv = ft.ListView(spacing=10, expand=True)
+    lv = ft.ListView(spacing=10)
     page.floating_action_button = create_add_button(page, lv)
     clients = get_clients()
     
     
     lvc = ft.Container(
-        content=lv
+        content=lv,
+        expand=True,
     )
     search = create_search_bar(page, lv)
 
