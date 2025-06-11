@@ -65,3 +65,15 @@ def operate_solde(mail: str, solde: float, operation: str) -> bool:
             return False
         conn.commit()
         return True
+
+def delete_client(mail: str) -> bool:
+    with sqlite3.connect("db/clients.db") as conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE FROM transactions WHERE mail = ?", (mail,))
+            cursor.execute("DELETE FROM clients WHERE mail = ?", (mail,))
+        except sqlite3.IntegrityError:
+            print(f"Erreur lors de la suppression du client {mail}")
+            return False
+        conn.commit()
+        return True

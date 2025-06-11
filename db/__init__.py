@@ -1,1 +1,1 @@
-from .utils import init_db, add_client, get_clients, search_client, operate_solde
+from .utils import init_db, add_client, get_clients, search_client, operate_solde, delete_client

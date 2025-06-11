@@ -47,3 +47,4 @@ def create_add_button(page: ft.Page):
         bgcolor=ft.Colors.LIME_300,
         on_click=lambda x: fab_pressed(page)
     )
+

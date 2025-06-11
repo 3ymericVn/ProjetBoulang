@@ -1,6 +1,6 @@
 import flet as ft
 from assets import create_add_button, create_client_card, create_search_bar
-from db import init_db, get_clients
+from db import init_db, get_clients, search_client, add_client, delete_client
 
 def main(page: ft.Page):
     page.title = "Accueil"

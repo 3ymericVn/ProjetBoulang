@@ -1,5 +1,14 @@
 import flet as ft
-from db import operate_solde
+from db import operate_solde, delete_client
+
+def on_delete_client(page: ft.Page, nom: str, prenom: str, mail: str):
+    if delete_client(mail):
+        page.snack_bar = ft.SnackBar(ft.Text(f"Le client {nom} {prenom} a été supprimé."))
+        page.update()
+    else:
+        page.snack_bar = ft.SnackBar(ft.Text(f"Erreur lors de la suppression du client {nom} {prenom}."))
+        page.update()
+
 
 def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Container:
     def on_click(e, radio_value, number_value):
@@ -51,7 +60,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Co
         actions_alignment=ft.MainAxisAlignment.CENTER,
         inset_padding=ft.padding.only(top=20, bottom=20, left=20, right=20)
     )
-
+    
     return ft.Container(
         content=ft.ListTile(
             leading=ft.CircleAvatar(
@@ -63,9 +72,12 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Co
             subtitle=ft.Text(mail, size=14, italic=True),
             trailing=ft.Column(
                 [
-                    ft.Text(f"0 €", size=14, weight=ft.FontWeight.BOLD),
-                    ft.ElevatedButton(
-                        text="Oui"
+                    ft.PopupMenuButton(
+                        items=[
+                            ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client(page, nom, prenom, mail)),
+                            ft.PopupMenuItem(text="Liste des transactions du client"),
+                            ft.PopupMenuItem(text="Modifier le client")
+                        ]
                     )
                 ]
             ),
