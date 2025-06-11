@@ -9,10 +9,11 @@ def main(page: ft.Page):
     page.padding = 0
 
     init_db()
-    page.floating_action_button = create_add_button(page)
+    lv = ft.ListView(spacing=10, expand=True)
+    page.floating_action_button = create_add_button(page, lv)
     clients = get_clients()
     
-    lv = ft.ListView(spacing=10)
+    
     lvc = ft.Container(
         content=lv
     )
@@ -32,7 +33,7 @@ def main(page: ft.Page):
     )
     for client in clients:
         lv.controls.append(
-            create_client_card(client['nom'], client['prenom'], client['mail'], page)
+            create_client_card(client['nom'], client['prenom'], client['mail'], page, lv)
         )
     page.add(lvc)
 

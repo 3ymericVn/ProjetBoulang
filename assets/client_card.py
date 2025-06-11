@@ -1,7 +1,7 @@
 import flet as ft
 from db import operate_solde, delete_client
 
-def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Container:
+def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView) -> ft.Container:
     def on_click(e, radio_value, number_value):
         if operate_solde(mail, number_value, radio_value):
             page.close(popup)
@@ -53,12 +53,16 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page) -> ft.Co
     )
     
     def on_delete_client(e):
-        if delete_client(mail):
-            page.snack_bar = ft.SnackBar(ft.Text(f"Le client {nom} {prenom} a été supprimé."))
-            page.update()
-        else:
-            page.snack_bar = ft.SnackBar(ft.Text(f"Erreur lors de la suppression du client {nom} {prenom}."))
-            page.update()
+        page.open(ft.SnackBar(
+            ft.Text(f"Le client {nom} {prenom} a été supprimé." if delete_client(mail) else f"Erreur lors de la suppression du client {nom} {prenom}.")
+        ))
+        for i, c in enumerate(lv.controls):
+            l: ft.ListTile = c.content
+            print(l.subtitle.value)
+            if l.subtitle.value == mail:
+                lv.controls.pop(i)
+                page.update()
+                break
 
     return ft.Container(
         content=ft.ListTile(

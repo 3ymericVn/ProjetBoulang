@@ -5,7 +5,7 @@ from db import add_client
 
 EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 
-def fab_pressed(page: ft.Page):
+def fab_pressed(page: ft.Page, lv: ft.ListView):
     def validate_input(e):
         if all([nom.value, prenom.value, mail.value]) and re.match(EMAIL_REGEX, mail.value):
             submit.disabled = False
@@ -22,9 +22,10 @@ def fab_pressed(page: ft.Page):
         page.close(dlg)
         if not add_client(nom.value, prenom.value, mail.value):
             return page.open(ft.SnackBar(ft.Text("Ce mail est déjà enregistré !")))
-        page.add(
-            create_client_card(nom.value, prenom.value, mail.value, page)
+        lv.controls.append(
+            create_client_card(nom.value, prenom.value, mail.value, page, lv)
         )
+        page.update()
 
         page.open(ft.SnackBar(ft.Text("Client ajouté !")))
         return None
@@ -41,10 +42,10 @@ def fab_pressed(page: ft.Page):
     ) 
     page.open(dlg)
 
-def create_add_button(page: ft.Page):
+def create_add_button(page: ft.Page, lv: ft.ListView):
     return ft.FloatingActionButton(
         icon=ft.Icons.ADD,
         bgcolor=ft.Colors.LIME_300,
-        on_click=lambda x: fab_pressed(page)
+        on_click=lambda x: fab_pressed(page, lv)
     )
 
