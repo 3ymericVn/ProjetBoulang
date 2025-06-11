@@ -1,5 +1,8 @@
+import re
 import flet as ft
-from db import operate_solde, delete_client
+from db import operate_solde, delete_client, edit_client    
+
+EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 
 def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView) -> ft.Container:
     def on_click(e, radio_value, number_value):
@@ -58,11 +61,57 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         ))
         for i, c in enumerate(lv.controls):
             l: ft.ListTile = c.content
-            print(l.subtitle.value)
             if l.subtitle.value == mail:
                 lv.controls.pop(i)
                 page.update()
                 break
+
+    def on_edit_client(e, e_nom: str, e_prenom: str, e_mail: str):
+        original_mail = e_mail
+        def validate_input(e):
+            if all([t_nom.value, t_prenom.value, t_mail.value]) and re.match(EMAIL_REGEX, t_mail.value):
+                submit.disabled = False
+            else:
+                submit.disabled = True
+
+        def on_edit_client_submit(e):
+            global nom, prenom, mail
+            for c in lv.controls:
+                l: ft.ListTile = c.content
+                if l.subtitle.value == original_mail:
+                    l.title.value = f"{t_nom.value} {t_prenom.value}"
+                    l.subtitle.value = t_mail.value
+                    page.update()
+                    break
+            else:
+                page.open(ft.SnackBar(ft.Text("Erreur lors de la modification du client !")))
+
+            page.close(dlg)
+
+            if edit_client(t_mail.value, t_nom.value, t_prenom.value):
+                page.open(ft.SnackBar(ft.Text("Client modifié !")))
+            else:
+                page.open(ft.SnackBar(ft.Text("Erreur lors de la modification du client !")))
+
+            nom, prenom, mail = e_nom, e_prenom, e_mail
+        
+        t_nom = ft.TextField(label="Nom", value=e_nom, on_change=validate_input)
+        t_prenom = ft.TextField(label="Prenom", value=e_prenom, on_change=validate_input)
+        t_mail = ft.TextField(label="Mail", value=e_mail, on_change=validate_input)
+        submit = ft.ElevatedButton(text="Modifier", on_click=on_edit_client_submit)
+
+        dlg = ft.AlertDialog(
+            title=ft.Text("Modifier le client :"),
+            actions_overflow_button_spacing=10,
+            actions=[
+                t_nom,
+                t_prenom,
+                t_mail,
+                submit
+            ]
+        )
+        page.open(dlg)
+
 
     return ft.Container(
         content=ft.ListTile(
@@ -78,8 +127,8 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                     ft.PopupMenuButton(
                         items=[
                             ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client),
-                            ft.PopupMenuItem(text="Liste des transactions du client"),
-                            ft.PopupMenuItem(text="Modifier le client")
+                            ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
+                            ft.PopupMenuItem(text="Liste des transactions du client")
                         ]
                     )
                 ]

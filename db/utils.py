@@ -76,3 +76,14 @@ def delete_client(mail: str) -> bool:
             return False
         conn.commit()
         return True
+
+def edit_client(mail: str, nom: str, prenom: str) -> bool:
+    with sqlite3.connect("db/clients.db") as conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("UPDATE clients SET nom = ?, prenom = ?, mail = ? WHERE mail = ?", (nom, prenom, mail, mail))
+        except sqlite3.IntegrityError:
+            print(f"Erreur lors de la modification du client {mail}")
+            return False
+        conn.commit()
+        return True
