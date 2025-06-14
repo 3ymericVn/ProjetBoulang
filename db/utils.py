@@ -87,3 +87,10 @@ def edit_client(mail: str, nom: str, prenom: str) -> bool:
             return False
         conn.commit()
         return True
+    
+def get_transactions(mail: str) -> list[sqlite3.Row]:
+    with sqlite3.connect("db/clients.db") as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM transactions WHERE mail = ?", (mail,))
+        return cursor.fetchall()

@@ -129,7 +129,8 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                             ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client),
                             ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
                             ft.PopupMenuItem(text="Liste des transactions du client")
-                        ]
+                        ],
+                        expand=True,
                     )
                 ]
             ),
