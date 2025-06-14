@@ -13,7 +13,7 @@ def main(page: ft.Page):
                 ft.ListTile(
                     title=ft.Text(f"{transac['date']} - {transac['operation']}"),
                     subtitle=ft.Text(f"{transac['mail']} - {transac['montant']} €"),
-                    leading=ft.Icon(ft.Icons.TRANSACTION_OUTLINED),
+                    leading=ft.Icon(ft.Icons.OUTLINED_FLAG_OUTLINED),
                     trailing=ft.Icon(ft.Icons.CHECK_CIRCLE_OUTLINED),
                 )
             )
@@ -34,20 +34,20 @@ def main(page: ft.Page):
 
     page.overlay.append(
         ft.Container(
-            boutton_ajout,
-            alignment=ft.alignment.bottom_right,
+            ft.Row(
+                [
+                    boutton_li_transac,
+                    boutton_ajout
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                width=page.width - 40,
+            ),
+            alignment=ft.alignment.bottom_center,
             margin=20,
         )
     )
-
-    page.overlay.append(
-        ft.Container(
-            boutton_li_transac,
-            alignment=ft.alignment.bottom_left,
-            margin=20,
-        )
-    )
-
+    
+    page.update()
 
     clients = get_clients()
     
