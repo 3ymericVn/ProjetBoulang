@@ -1,10 +1,11 @@
 import flet as ft
 from assets import create_add_button, create_client_card, create_search_bar
-from db import init_db, get_clients
+from db import init_db, get_clients, get_transactions
+
 
 def main(page: ft.Page):
 
-    def affichage_transac():
+    def affichage_transac(lvc):
         transacs = get_transactions()
         lv2 = ft.ListView(spacing=10)
         for transac in transacs:
@@ -28,14 +29,14 @@ def main(page: ft.Page):
     lv = ft.ListView(spacing=10)
     boutton_ajout = create_add_button(page, lv)
     boutton_li_transac = ft.FloatingActionButton(
-        icon=ft.Icons.ASSESSMENT_OUTLINED, on_click=affichage_transac(), bgcolor=ft.Colors.LIME_300
+        icon=ft.Icons.ASSESSMENT_OUTLINED, on_click=lambda x : affichage_transac(lvc), bgcolor=ft.Colors.LIME_300
     )
 
     page.overlay.append(
         ft.Container(
             boutton_ajout,
             alignment=ft.alignment.bottom_right,
-            margin=200,
+            margin=20,
         )
     )
 

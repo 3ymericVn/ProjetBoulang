@@ -96,9 +96,9 @@ def get_client_solde(mail: str) -> float:
         result = cursor.fetchone()
         return result['solde'] if result else 0.0
     
-def get_transactions(mail: str) -> list[sqlite3.Row]:
+def get_transactions() -> list[sqlite3.Row]:
     with sqlite3.connect("db/clients.db") as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM transactions WHERE mail = ?", (mail,))
+        cursor.execute("SELECT * FROM transactions")
         return cursor.fetchall()
