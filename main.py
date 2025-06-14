@@ -11,9 +11,9 @@ def main(page: ft.Page):
         for transac in transacs:
             lv2.controls.append(
                 ft.ListTile(
-                    title=ft.Text(f"{transac['date']} - {transac['operation']}"),
+                    title=ft.Text(f"{transac['date']} - {'Ajout' if transac['operation'] == 'Créditer' else 'Débit'}"),
                     subtitle=ft.Text(f"{transac['mail']} - {transac['montant']} €"),
-                    leading=ft.Icon(ft.Icons.OUTLINED_FLAG_OUTLINED),
+                    leading=ft.Icon(ft.Icons.NOT_ACCESSIBLE_OUTLINED),
                     trailing=ft.Icon(ft.Icons.CHECK_CIRCLE_OUTLINED),
                 )
             )
@@ -32,7 +32,7 @@ def main(page: ft.Page):
         icon=ft.Icons.ASSESSMENT_OUTLINED, on_click=lambda x : affichage_transac(lvc), bgcolor=ft.Colors.LIME_300
     )
 
-    
+
     page.update()
 
     clients = get_clients()
@@ -48,9 +48,12 @@ def main(page: ft.Page):
         ft.Container(
             ft.Row(
                 [
-                    search
+                    search, 
+                    boutton_li_transac,
+                    boutton_ajout,
                 ],
-                alignment=ft.MainAxisAlignment.CENTER,
+                alignment=ft.MainAxisAlignment.END,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
             bgcolor=ft.Colors.BLUE,
             padding=ft.padding.all(20),
@@ -60,17 +63,7 @@ def main(page: ft.Page):
         lv.controls.append(
             create_client_card(client['nom'], client['prenom'], client['mail'], page, lv)
         )
-    page.add(
-        lvc,
-        ft.Row(
-            [
-                ft.Container(boutton_li_transac, alignment=ft.alignment.bottom_left, margin=20),
-                ft.Container(boutton_ajout, alignment=ft.alignment.bottom_right, margin=20),
-            ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            vertical_alignment=ft.CrossAxisAlignment.END,
-        ),
-    )
+    page.add(lvc)
 
 
 ft.app(main)
