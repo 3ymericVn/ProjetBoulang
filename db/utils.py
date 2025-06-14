@@ -100,5 +100,10 @@ def get_transactions() -> list[sqlite3.Row]:
     with sqlite3.connect("db/clients.db") as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM transactions")
+        cursor.execute("""
+            SELECT t.*, c.nom, c.prenom 
+            FROM transactions t 
+            JOIN clients c ON t.mail = c.mail
+            ORDER BY t.date DESC
+        """)
         return cursor.fetchall()

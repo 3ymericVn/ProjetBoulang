@@ -4,19 +4,31 @@ from db import init_db, get_clients, get_transactions
 
 
 def main(page: ft.Page):
-
     def affichage_transac(lvc):
         transacs = get_transactions()
         lv2 = ft.ListView(spacing=10)
+        datatable = ft.DataTable(
+            columns=[
+                ft.DataColumn(ft.Text("Date")),
+                ft.DataColumn(ft.Text("Client")),
+                ft.DataColumn(ft.Text("Mail")),
+                ft.DataColumn(ft.Text("Montant")),
+            ],
+            rows=[]
+        )
         for i in range(len(transacs)-1,-1,-1):
             transac = transacs[i]
-            lv2.controls.append(
-                ft.ListTile(
-                    title=ft.Text(f"{transac['date']} - {'Ajout' if transac['operation'] == 'add' else 'Débit'}"),        
-                    subtitle=ft.Text(f"{transac['mail']} - {transac['montant']} €"),
-                    leading=ft.Icon(ft.Icons.NOT_ACCESSIBLE_OUTLINED),
+            datatable.rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(transac['date'])),
+                        ft.DataCell(ft.Text(f"{transac['nom']} {transac['prenom']}")),
+                        ft.DataCell(ft.Text(transac['mail'])),
+                        ft.DataCell(ft.Text(("+" if transac['operation'] == 'add' else "-") + str(transac['montant']))),
+                    ]
                 )
             )
+        lv2.controls.append(datatable)
         lvc.content = lv2
         page.add(lvc)
 
