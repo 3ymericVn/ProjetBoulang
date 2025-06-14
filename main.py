@@ -32,20 +32,6 @@ def main(page: ft.Page):
         icon=ft.Icons.ASSESSMENT_OUTLINED, on_click=lambda x : affichage_transac(lvc), bgcolor=ft.Colors.LIME_300
     )
 
-    page.overlay.append(
-        ft.Container(
-            ft.Row(
-                [
-                    boutton_li_transac,
-                    boutton_ajout
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                width=page.width - 40,
-            ),
-            alignment=ft.alignment.bottom_center,
-            margin=20,
-        )
-    )
     
     page.update()
 
@@ -74,9 +60,17 @@ def main(page: ft.Page):
         lv.controls.append(
             create_client_card(client['nom'], client['prenom'], client['mail'], page, lv)
         )
-    page.add(lvc)
-
-
+    page.add(
+        lvc,
+        ft.Row(
+            [
+                ft.Container(boutton_li_transac, alignment=ft.alignment.bottom_left, margin=20),
+                ft.Container(boutton_ajout, alignment=ft.alignment.bottom_right, margin=20),
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=ft.CrossAxisAlignment.END,
+        ),
+    )
 
 
 ft.app(main)
