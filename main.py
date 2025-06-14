@@ -8,13 +8,13 @@ def main(page: ft.Page):
     def affichage_transac(lvc):
         transacs = get_transactions()
         lv2 = ft.ListView(spacing=10)
-        for transac in transacs:
+        for i in range(len(transacs)-1,-1,-1):
+            transac = transacs[i]
             lv2.controls.append(
                 ft.ListTile(
-                    title=ft.Text(f"{transac['date']} - {'Ajout' if transac['operation'] == 'Créditer' else 'Débit'}"),
+                    title=ft.Text(f"{transac['date']} - {'Ajout' if transac['operation'] == 'add' else 'Débit'}"),        
                     subtitle=ft.Text(f"{transac['mail']} - {transac['montant']} €"),
                     leading=ft.Icon(ft.Icons.NOT_ACCESSIBLE_OUTLINED),
-                    trailing=ft.Icon(ft.Icons.CHECK_CIRCLE_OUTLINED),
                 )
             )
         lvc.content = lv2
