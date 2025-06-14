@@ -8,7 +8,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
     def on_click(e, radio_value, number_value):
         if operate_solde(mail, number_value, radio_value):
             page.close(popup)
-            solde_text.value = f"Solde: {get_client_solde(mail):.2f}€"
+            solde_text.value = f"{get_client_solde(mail):.2f}€"
             page.open(ft.SnackBar(ft.Text(f"Le solde de {nom} {prenom} a été modifié.")))
             page.update()
         else:
@@ -112,10 +112,12 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         )
         page.open(dlg)
 
+    solde_text = ft.Text(f"{get_client_solde(mail):.2f}€", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
+
     return ft.Container(
         content=ft.ListTile(
             leading_and_trailing_text_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700),
-            leading=ft.Text(f"{get_client_solde(mail):.2f}€"),
+            leading=solde_text,
             title=ft.Text(f"{nom} {prenom}", size=18, weight=ft.FontWeight.BOLD),
             subtitle=ft.Text(f"{mail}", size=14, italic=True),
             trailing=ft.Column(
