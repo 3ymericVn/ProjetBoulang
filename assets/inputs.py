@@ -1,6 +1,6 @@
 import flet as ft
 from assets.client_card import create_client_card
-from db import search_client, delete_client
+from db import search_client
 
 def create_search_bar(page: ft.Page, lv: ft.ListView) -> ft.TextField:
     def on_change(e):
@@ -8,7 +8,7 @@ def create_search_bar(page: ft.Page, lv: ft.ListView) -> ft.TextField:
         lv.controls.clear()
         for client in search_results:
             lv.controls.append(
-                create_client_card(client['nom'], client['prenom'], client['mail'], page)
+                create_client_card(client['nom'], client['prenom'], client['mail'], page, lv)
             )
         page.update()
     search = ft.TextField(
