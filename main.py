@@ -44,6 +44,7 @@ def main(page: ft.Page):
     page.title = "Accueil"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.padding = ft.padding.only(0, 0, 0, 0)
     page.window.frameless = True
 
     init_db()
