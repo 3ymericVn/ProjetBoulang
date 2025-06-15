@@ -34,7 +34,7 @@ def main(page: ft.Page):
         boutton_li_transac.icon = ft.Icons.HOME_FILLED
         boutton_li_transac.on_click = lambda x : affichage_clients(lvc, lv, boutton_li_transac)
         page.update()
-    
+
     def affichage_clients(lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
         lvc.content = lv
         boutton_li_transac.icon = ft.Icons.ASSESSMENT_OUTLINED
@@ -45,7 +45,7 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.padding = ft.padding.only(0, 0, 0, 0)
-    page.window.frameless = True
+    page.window.frameless = False
 
     init_db()
     lv = ft.ListView(spacing=10)
