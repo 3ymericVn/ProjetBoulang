@@ -2,7 +2,6 @@ import flet as ft
 from assets import create_add_button, create_client_card, create_search_bar
 from db import init_db, get_clients, get_transactions
 
-
 def main(page: ft.Page):
     def affichage_transac(lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
         transacs = get_transactions()
