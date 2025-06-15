@@ -194,5 +194,8 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-
+# Database
 db/clients.db
+
+# Environment variables
+.env
