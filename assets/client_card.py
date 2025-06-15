@@ -15,13 +15,11 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
             page.open(ft.SnackBar(ft.Text("Solde insuffisant !")))
 
     radio = ft.RadioGroup(
-        value="sub",
-        content=ft.Column(
-            [
-                ft.Radio(value="sub", label="Débiter", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
-                ft.Radio(value="add", label="Créditer", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
-            ]
-        )
+        value="sub",  # valeur par défaut
+        content=ft.Column([
+            ft.Radio(value="sub", label="Débiter", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
+            ft.Radio(value="add", label="Créditer", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
+        ])
     )
     number_input = ft.TextField(
         label="Montant",
@@ -114,6 +112,11 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
 
     solde_text = ft.Text(f"{get_client_solde(mail):.2f}€", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
 
+    def reset_value(e):
+        radio.value = "sub"      
+        number_input.value = ""     
+        page.open(popup)
+
     return ft.Container(
         content=ft.ListTile(
             leading_and_trailing_text_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700),
@@ -134,7 +137,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                 spacing=5,
                 alignment=ft.MainAxisAlignment.END,
             ),
-            on_click=lambda x: page.open(popup),
+            on_click=reset_value, 
         ),
         bgcolor=ft.Colors.TEAL_100,
         border_radius=12,
