@@ -1,8 +1,10 @@
 import flet as ft
 from assets import create_add_button, create_client_card, create_search_bar, create_transaction_table, affichage_transac, affichage_clients, create_list_transac
 from db import init_db, get_clients, get_transactions
+from mail import send_mail
 
 def main(page: ft.Page):
+
     page.title = "Accueil"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
@@ -16,8 +18,8 @@ def main(page: ft.Page):
         expand=True,
     )
     
-    boutton_ajout = create_add_button(page, lv, lvc)
     boutton_li_transac = create_list_transac(page, lvc, lv, None)
+    boutton_ajout = create_add_button(page, lv, lvc, boutton_li_transac)
     
     boutton_li_transac.on_click = lambda x: affichage_transac(page, lvc, lv, boutton_li_transac)
 

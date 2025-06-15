@@ -60,11 +60,11 @@ def fab_pressed(page: ft.Page, lv: ft.ListView, lvc: ft.Container, home_button: 
     ) 
     page.open(dlg)
 
-def create_add_button(page: ft.Page, lv: ft.ListView, lvc: ft.Container):
+def create_add_button(page: ft.Page, lv: ft.ListView, lvc: ft.Container, boutton_li_transac: ft.FloatingActionButton):
     return ft.FloatingActionButton(
         icon=ft.Icons.ADD,
         bgcolor=ft.Colors.LIME_300,
-        on_click=lambda x: fab_pressed(page, lv, lvc)
+        on_click=lambda x: fab_pressed(page, lv, lvc, boutton_li_transac)
     )
 
 def create_list_transac(page: ft.Page, lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton) -> ft.FloatingActionButton:

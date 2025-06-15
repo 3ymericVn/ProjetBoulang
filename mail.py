@@ -8,7 +8,7 @@ EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 
 
-def send_mail(subject, body, recipients):
+def send_mail(subject: str, body: str, recipients: list[str]):
    msg = MIMEText(body)
    msg['Subject'] = subject
    msg['From'] = EMAIL
