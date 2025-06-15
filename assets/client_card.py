@@ -1,9 +1,10 @@
 import re
 import flet as ft
 from db import operate_solde, delete_client, edit_client, get_client_solde, get_transactions_by_mail
+from .views import affichage_clients, create_transaction_table
 EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 
-def create_transaction_table(transac_cli: list[dict]) -> ft.DataTable:
+def create_transaction_table(transac_cli: list[dict], home_button: ft.FloatingActionButton) -> ft.DataTable:
     datatable = ft.DataTable(
         columns=[
             ft.DataColumn(ft.Text("Date")),
@@ -13,6 +14,20 @@ def create_transaction_table(transac_cli: list[dict]) -> ft.DataTable:
         ],
         rows=[]
     )
+
+    if len(transac_cli) == 0:
+        datatable.rows.append(
+            ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text("Aucune transaction trouvée")),
+                    ft.DataCell(ft.Text("")),
+                    ft.DataCell(ft.Text("")),
+                    ft.DataCell(ft.Text("")),
+                ]
+            )
+        )
+        return datatable
+
     for i in range(len(transac_cli)-1,-1,-1):
         transac = transac_cli[i]
         datatable.rows.append(
@@ -27,7 +42,7 @@ def create_transaction_table(transac_cli: list[dict]) -> ft.DataTable:
         )
     return datatable
 
-def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView, lvc: ft.Container) -> ft.Container:
+def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView, lvc: ft.Container, home_button: ft.FloatingActionButton) -> ft.Container:
     def on_click(e, radio_value, number_value):
         if operate_solde(mail, number_value, radio_value):
             page.close(popup)
@@ -144,16 +159,15 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         number_input.value = ""     
         page.open(popup)
 
-    def affichage_transac_client(mail, lvc: ft.Container):
+    def affichage_transac_client(mail, lvc: ft.Container, home_button: ft.FloatingActionButton):
 
         transac_cli = get_transactions_by_mail(mail)
         lv3 = ft.ListView(spacing=10)
-        datatable = create_transaction_table(transac_cli)
+        datatable = create_transaction_table(transac_cli, home_button)
         lv3.controls.append(datatable)
         lvc.content = lv3
-        lvc.update()
-        # boutton_li_transac.icon = ft.Icons.HOME_FILLED
-        # boutton_li_transac.on_click = lambda x : affichage_clients(lvc, lv, boutton_li_transac)
+        home_button.icon = ft.Icons.HOME_FILLED
+        home_button.on_click = lambda x : affichage_clients(page, lvc, lv, home_button)
         page.update()
        
 
@@ -169,7 +183,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                         items=[
                             ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client),
                             ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
-                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: affichage_transac_client(mail, lvc))
+                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: affichage_transac_client(mail, lvc, home_button))
                         ],
                         expand=True,
                     )
