@@ -108,7 +108,7 @@ def get_transactions() -> list[sqlite3.Row]:
         """)
         return cursor.fetchall()
 
-def get_client_by_mail(mail: str) -> list[sqlite3.Row]:
+def get_transactions_by_mail(mail: str) -> list[sqlite3.Row]:
     with sqlite3.connect("db/clients.db") as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()

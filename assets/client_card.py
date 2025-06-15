@@ -1,6 +1,6 @@
 import re
 import flet as ft
-from db import operate_solde, delete_client, edit_client, get_client_solde, get_client_by_mail    
+from db import operate_solde, delete_client, edit_client, get_client_solde, get_transactions_by_mail    
 
 EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 
@@ -133,7 +133,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                         items=[
                             ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client),
                             ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
-                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: print(get_client_by_mail(mail)))
+                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: print(get_transactions_by_mail(mail)))
                         ],
                         expand=True,
                     )
