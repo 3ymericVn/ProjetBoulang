@@ -1,32 +1,12 @@
 import flet as ft
-from assets import create_add_button, create_client_card, create_search_bar
+from assets import create_add_button, create_client_card, create_search_bar, create_transaction_table
 from db import init_db, get_clients, get_transactions
 
 def main(page: ft.Page):
     def affichage_transac(lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
         transacs = get_transactions()
         lv2 = ft.ListView(spacing=10)
-        datatable = ft.DataTable(
-            columns=[
-                ft.DataColumn(ft.Text("Date")),
-                ft.DataColumn(ft.Text("Client")),
-                ft.DataColumn(ft.Text("Mail")),
-                ft.DataColumn(ft.Text("Montant")),
-            ],
-            rows=[]
-        )
-        for i in range(len(transacs)-1,-1,-1):
-            transac = transacs[i]
-            datatable.rows.append(
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text(transac['date'])),
-                        ft.DataCell(ft.Text(f"{transac['nom']} {transac['prenom']}")),
-                        ft.DataCell(ft.Text(transac['mail'])),
-                        ft.DataCell(ft.Text(("+" if transac['operation'] == 'add' else "-") + str(transac['montant']))),
-                    ]
-                )
-            )
+        datatable = create_transaction_table(transacs)
         lv2.controls.append(datatable)
         lvc.content = lv2
         page.add(lvc)
@@ -48,7 +28,11 @@ def main(page: ft.Page):
 
     init_db()
     lv = ft.ListView(spacing=10)
-    boutton_ajout = create_add_button(page, lv)
+    lvc = ft.Container(
+        content=lv,
+        expand=True,
+    )
+    boutton_ajout = create_add_button(page, lv, lvc)
     boutton_li_transac = ft.FloatingActionButton(
         icon=ft.Icons.ASSESSMENT_OUTLINED, on_click=lambda x : affichage_transac(lvc, lv, boutton_li_transac), bgcolor=ft.Colors.LIME_300
     )
@@ -57,11 +41,7 @@ def main(page: ft.Page):
 
     clients = get_clients()
     
-    lvc = ft.Container(
-        content=lv,
-        expand=True,
-    )
-    search = create_search_bar(page, lv)
+    search = create_search_bar(page, lv, lvc)
 
     page.add(
         ft.Container(
@@ -80,7 +60,7 @@ def main(page: ft.Page):
     )
     for client in clients:
         lv.controls.append(
-            create_client_card(client['nom'], client['prenom'], client['mail'], page, lv)
+            create_client_card(client['nom'], client['prenom'], client['mail'], page, lv, lvc)
         )
     page.add(lvc)
 

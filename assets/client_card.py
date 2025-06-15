@@ -3,7 +3,31 @@ import flet as ft
 from db import operate_solde, delete_client, edit_client, get_client_solde, get_transactions_by_mail
 EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 
-def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView) -> ft.Container:
+def create_transaction_table(transac_cli: list[dict]) -> ft.DataTable:
+    datatable = ft.DataTable(
+        columns=[
+            ft.DataColumn(ft.Text("Date")),
+            ft.DataColumn(ft.Text("Client")),
+            ft.DataColumn(ft.Text("Mail")),
+            ft.DataColumn(ft.Text("Montant")),
+        ],
+        rows=[]
+    )
+    for i in range(len(transac_cli)-1,-1,-1):
+        transac = transac_cli[i]
+        datatable.rows.append(
+            ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text(transac['date'])),
+                    ft.DataCell(ft.Text(f"{transac['nom']} {transac['prenom']}")),
+                    ft.DataCell(ft.Text(transac['mail'])),
+                    ft.DataCell(ft.Text(("+" if transac['operation'] == 'add' else "-") + str(transac['montant']))),
+                ]
+            )
+        )
+    return datatable
+
+def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView, lvc: ft.Container) -> ft.Container:
     def on_click(e, radio_value, number_value):
         if operate_solde(mail, number_value, radio_value):
             page.close(popup)
@@ -120,34 +144,11 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         number_input.value = ""     
         page.open(popup)
 
-    def affichage_transac_client(mail,page):
+    def affichage_transac_client(mail, lvc: ft.Container):
 
         transac_cli = get_transactions_by_mail(mail)
         lv3 = ft.ListView(spacing=10)
-        lvc = ft.Container(
-            content=lv3,
-            expand=True,
-        )
-        datatable = ft.DataTable(
-            columns=[
-                ft.DataColumn(ft.Text("Date")),
-                ft.DataColumn(ft.Text("Montant")),
-                ft.DataColumn(ft.Text("Opération")),
-            ],
-            rows=[]
-        )
-        for i in range(len(transac_cli)-1,-1,-1):
-            transac = transac_cli[i]
-            datatable.rows.append(
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text(transac['date'])),
-                        ft.DataCell(ft.Text(f"{transac['nom']} {transac['prenom']}")),
-                        ft.DataCell(ft.Text(transac['mail'])),
-                        ft.DataCell(ft.Text(("+" if transac['operation'] == 'add' else "-") + str(transac['montant']))),
-                    ]
-                )
-            )
+        datatable = create_transaction_table(transac_cli)
         lv3.controls.append(datatable)
         lvc.content = lv3
         lvc.update()
@@ -168,7 +169,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                         items=[
                             ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client),
                             ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
-                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: affichage_transac_client(mail,page))
+                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: affichage_transac_client(mail, lvc))
                         ],
                         expand=True,
                     )
