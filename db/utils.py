@@ -107,3 +107,16 @@ def get_transactions() -> list[sqlite3.Row]:
             ORDER BY t.date DESC
         """)
         return cursor.fetchall()
+
+def get_client_by_mail(mail: str) -> list[sqlite3.Row]:
+    with sqlite3.connect("db/clients.db") as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT t.*, c.nom, c.prenom 
+            FROM transactions t 
+            JOIN clients c ON t.mail = c.mail
+            WHERE t.mail = ?
+            ORDER BY t.date DESC
+        """, (mail,))
+        return cursor.fetchall()

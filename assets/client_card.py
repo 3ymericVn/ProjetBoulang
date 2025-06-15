@@ -1,6 +1,6 @@
 import re
 import flet as ft
-from db import operate_solde, delete_client, edit_client, get_client_solde    
+from db import operate_solde, delete_client, edit_client, get_client_solde, get_client_by_mail    
 
 EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 
@@ -72,6 +72,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                 submit.disabled = False
             else:
                 submit.disabled = True
+            page.update()
 
         def on_edit_client_submit(e):
             nonlocal nom, prenom, mail
@@ -96,7 +97,10 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         t_nom = ft.TextField(label="Nom", value=e_nom, on_change=validate_input)
         t_prenom = ft.TextField(label="Prenom", value=e_prenom, on_change=validate_input)
         t_mail = ft.TextField(label="Mail", value=e_mail, on_change=validate_input)
-        submit = ft.ElevatedButton(text="Modifier", on_click=on_edit_client_submit)
+        submit = ft.ElevatedButton(text="Modifier", on_click=on_edit_client_submit, disabled=True)
+
+        # Valider les champs initialement
+        validate_input(None)
 
         dlg = ft.AlertDialog(
             title=ft.Text("Modifier le client :"),
@@ -129,7 +133,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                         items=[
                             ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client),
                             ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
-                            ft.PopupMenuItem(text="Liste des transactions du client")
+                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: print(get_client_by_mail(mail)))
                         ],
                         expand=True,
                     )

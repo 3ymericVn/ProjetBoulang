@@ -16,7 +16,7 @@ def main(page: ft.Page):
             ],
             rows=[]
         )
-        for i in range(len(transacs)):
+        for i in range(len(transacs)-1,-1,-1):
             transac = transacs[i]
             datatable.rows.append(
                 ft.DataRow(
