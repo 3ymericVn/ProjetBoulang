@@ -4,7 +4,7 @@ from db import init_db, get_clients, get_transactions
 
 
 def main(page: ft.Page):
-    def affichage_transac(lvc, lv, boutton_li_transac):
+    def affichage_transac(lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
         transacs = get_transactions()
         lv2 = ft.ListView(spacing=10)
         datatable = ft.DataTable(
@@ -35,7 +35,7 @@ def main(page: ft.Page):
         boutton_li_transac.on_click = lambda x : affichage_clients(lvc, lv, boutton_li_transac)
         page.update()
     
-    def affichage_clients(lvc, lv, boutton_li_transac):
+    def affichage_clients(lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
         lvc.content = lv
         boutton_li_transac.icon = ft.Icons.ASSESSMENT_OUTLINED
         boutton_li_transac.on_click = lambda x : affichage_transac(lvc, lv, boutton_li_transac)
@@ -44,7 +44,7 @@ def main(page: ft.Page):
     page.title = "Accueil"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.padding = 0
+    page.window.frameless = True
 
     init_db()
     lv = ft.ListView(spacing=10)
@@ -53,11 +53,9 @@ def main(page: ft.Page):
         icon=ft.Icons.ASSESSMENT_OUTLINED, on_click=lambda x : affichage_transac(lvc, lv, boutton_li_transac), bgcolor=ft.Colors.LIME_300
     )
 
-
     page.update()
 
     clients = get_clients()
-    
     
     lvc = ft.Container(
         content=lv,
