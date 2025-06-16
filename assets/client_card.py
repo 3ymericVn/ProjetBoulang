@@ -28,8 +28,7 @@ def create_transaction_table(transac_cli: list[dict], home_button: ft.FloatingAc
         )
         return datatable
 
-    for i in range(len(transac_cli)-1,-1,-1):
-        transac = transac_cli[i]
+    for transac in transac_cli:
         datatable.rows.append(
             ft.DataRow(
                 cells=[
