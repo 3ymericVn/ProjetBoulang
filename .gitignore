@@ -199,3 +199,4 @@ db/clients.db
 
 # Environment variables
 .env
+env.py

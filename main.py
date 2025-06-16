@@ -4,7 +4,7 @@ from db import init_db, get_clients, get_transactions
 from mail import send_mail
 
 def main(page: ft.Page):
-
+    send_mail("test", "test", ["remi.avocat@gmail.com"])
     page.title = "Accueil"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER

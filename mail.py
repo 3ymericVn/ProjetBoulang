@@ -1,11 +1,6 @@
-import os
 import smtplib
 from email.mime.text import MIMEText
-from dotenv import load_dotenv
-load_dotenv() 
-
-EMAIL = os.getenv("EMAIL")
-PASSWORD = os.getenv("PASSWORD")
+from env import EMAIL, PASSWORD
 
 
 def send_mail(subject: str, body: str, recipients: list[str]):
