@@ -51,44 +51,133 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         else:
             page.open(ft.SnackBar(ft.Text("Solde insuffisant !")))
 
+    show_quick_amounts = False
+
+    def on_radio_change(_):
+        nonlocal show_quick_amounts
+        show_quick_amounts = radio.value == "add"
+        quick_amounts_container.visible = show_quick_amounts
+        page.update()
+
     radio = ft.RadioGroup(
-        value="sub", 
-        content=ft.Column([
-            ft.Radio(value="sub", label="Débiter", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
-            ft.Radio(value="add", label="Créditer", width=100, height=50, label_style=ft.TextStyle(size=20, weight=ft.FontWeight.BOLD)),
-        ])
+        value="sub",
+        on_change=on_radio_change,
+        content=ft.Row(
+            [
+                ft.Radio(
+                    value="sub",
+                    label="Débiter",
+                    width=120,
+                    height=50,
+                    label_style=ft.TextStyle(size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.RED_700),
+                ),
+                ft.Radio(
+                    value="add",
+                    label="Créditer",
+                    width=120,
+                    height=50,
+                    label_style=ft.TextStyle(size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.GREEN_700),
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=30,
+        ),
     )
+
     number_input = ft.TextField(
-        label="Montant",
+        label="Montant personnalisé",
         keyboard_type=ft.KeyboardType.NUMBER,
+        border_radius=8,
+        border_color=ft.Colors.BLUE_200,
+        bgcolor=ft.Colors.BLUE_50,
+        text_style=ft.TextStyle(size=18),
+        width=220,
+        prefix_icon=ft.Icons.EURO_SYMBOL,
+        visible=True,
     )
+
+    radio2 = ft.RadioGroup(
+        value="sub",
+        content=ft.Row(
+            [
+                ft.Radio(
+                    value="vingt",
+                    label="20€ + 1€",
+                    width=120,
+                    height=50,
+                    label_style=ft.TextStyle(size=18, weight=ft.FontWeight.W_600, color=ft.Colors.BLUE_900),
+                ),
+                ft.Radio(
+                    value="cinquante",
+                    label="50€ + 4€",
+                    width=120,
+                    height=50,
+                    label_style=ft.TextStyle(size=18, weight=ft.FontWeight.W_600, color=ft.Colors.BLUE_900),
+                ),
+                ft.Radio(
+                    value="cent",
+                    label="100€ + 10€",
+                    width=130,
+                    height=50,
+                    label_style=ft.TextStyle(size=18, weight=ft.FontWeight.W_600, color=ft.Colors.BLUE_900),
+                ),
+                ft.Radio(
+                    value="cent_trente",
+                    label="130€ + 15€",
+                    width=130,
+                    height=50,
+                    label_style=ft.TextStyle(size=18, weight=ft.FontWeight.W_600, color=ft.Colors.BLUE_900),
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=20,
+        ),
+    )
+
+    quick_amounts_container = ft.Column(
+        [
+            ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
+            ft.Text("Ou choisissez un montant rapide :", size=16, color=ft.Colors.GREY_700),
+            radio2,
+        ],
+        visible=show_quick_amounts,
+    )
+
     popup = ft.AlertDialog(
-        shape=ft.RoundedRectangleBorder(radius=5),
-        title=ft.Text("Créditer ou débiter ?"),
+        shape=ft.RoundedRectangleBorder(radius=12),
         content=ft.Column(
             [
                 radio,
-                number_input,
+                ft.Row(
+                    [number_input],
+                    alignment=ft.MainAxisAlignment.CENTER, 
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+                quick_amounts_container,
             ],
-            width=400,
-            height=200,
+            width=600,
+            height=320,
             spacing=20,
+            alignment=ft.MainAxisAlignment.CENTER, 
         ),
         actions=[
             ft.FilledButton(
-                text="Valider", 
-                on_click=lambda x: on_click(x, radio.value, number_input.value), 
+                text="Valider",
+                on_click=lambda x: on_click(x, radio.value, number_input.value),
                 style=ft.ButtonStyle(
-                    shape=ft.RoundedRectangleBorder(radius=5),
-                    padding=ft.Padding(10, 10, 10, 10),
-                    text_style=ft.TextStyle(size=30, weight=ft.FontWeight.BOLD),
-                    bgcolor=ft.Colors.GREEN_300,
-                    color=ft.Colors.BLACK,
-                )
+                    shape=ft.RoundedRectangleBorder(radius=8),
+                    padding=ft.Padding(16, 10, 16, 10),
+                    text_style=ft.TextStyle(size=22, weight=ft.FontWeight.BOLD),
+                    bgcolor=ft.Colors.GREEN_400,
+                    color=ft.Colors.WHITE,
+                ),
+                icon=ft.Icons.CHECK_CIRCLE_OUTLINED,
             ),
         ],
         actions_alignment=ft.MainAxisAlignment.CENTER,
-        inset_padding=ft.padding.only(top=20, bottom=20, left=20, right=20)
+        inset_padding=ft.padding.only(top=24, bottom=24, left=24, right=24),
+        bgcolor=ft.Colors.WHITE,
+        elevation=8,
     )
 
 
@@ -159,7 +248,6 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         t_mail = ft.TextField(label="Mail", value=e_mail, on_change=validate_input)
         submit = ft.ElevatedButton(text="Modifier", on_click=on_edit_client_submit, disabled=True)
 
-        # Valider les champs initialement
         validate_input(None)
 
         dlg = ft.AlertDialog(
