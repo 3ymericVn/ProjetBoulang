@@ -62,7 +62,7 @@ async def operate_solde(mail: str, solde: float, operation: str) -> bool:
             op = "+" if operation == "add" else "-"
             await conn.execute(f"UPDATE clients SET solde = solde {op} $1 WHERE mail = $2", float(solde), mail)
             await conn.execute("INSERT INTO transactions (mail, montant, operation) VALUES ($1, $2, $3)", mail, float(solde), operation)
-        except asyncpg.ForeignKeyViolationError:
+        except (asyncpg.ForeignKeyViolationError, asyncpg.exceptions.CheckViolationError):
             return False
     await pool.close()
     return True

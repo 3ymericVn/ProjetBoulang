@@ -46,6 +46,7 @@ async def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv
         await valider_click(e, radio.value, number_input.value)
     
     async def valider_click(e, radio_value, number_value):
+        print(radio_value, number_value)
         if await operate_solde(mail, number_value, radio_value):
             page.close(popup)
             solde_text.value = f"{await get_client_solde(mail):.2f}€"
@@ -166,7 +167,7 @@ async def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv
         actions=[
             ft.FilledButton(
                 text="Valider",
-                on_click=lambda x: on_click(x, radio.value, number_input.value),
+                on_click=on_click,
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=8),
                     padding=ft.Padding(16, 10, 16, 10),
