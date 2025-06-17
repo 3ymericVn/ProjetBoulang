@@ -90,17 +90,40 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         actions_alignment=ft.MainAxisAlignment.CENTER,
         inset_padding=ft.padding.only(top=20, bottom=20, left=20, right=20)
     )
-    
-    def on_delete_client(e):
-        page.open(ft.SnackBar(
-            ft.Text(f"Le client {nom} {prenom} a été supprimé." if delete_client(mail) else f"Erreur lors de la suppression du client {nom} {prenom}.")
-        ))
-        for i, c in enumerate(lv.controls):
-            l: ft.ListTile = c.content
-            if l.subtitle.value == mail:
-                lv.controls.pop(i)
-                page.update()
-                break
+
+
+    def delete_client_confirm(mail):
+        dlg = ft.AlertDialog(
+            title=ft.Text("Supprimer le client :"),
+            content=ft.Text(f"Êtes-vous sûr de vouloir supprimer le client {nom} {prenom} ?"),
+            actions=[
+                ft.TextButton(text="Annuler", on_click=lambda x: page.close(dlg)),
+                ft.TextButton(text="Supprimer", on_click=lambda x: (delete_client2(mail), page.close(dlg))),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        page.open(dlg)
+
+
+    def delete_client2(mail):
+        solde = get_client_solde(mail)
+        if solde > 0:
+            page.open(ft.SnackBar(
+                ft.Text(f"Le client {nom} {prenom} a un solde positif de {solde:.2f}€. Veuillez le débiter avant de le supprimer.")
+            ))
+            return
+        else:
+            page.open(ft.SnackBar(
+                ft.Text(f"Le client {nom} {prenom} a été supprimé.")
+            ))
+            delete_client(mail)
+            for i, c in enumerate(lv.controls):
+                l: ft.ListTile = c.content
+                if l.subtitle.value == mail:
+                    lv.controls.pop(i)
+                    page.update()
+                    break
+
 
     def on_edit_client(e, e_nom: str, e_prenom: str, e_mail: str):
         original_mail = e_mail
@@ -180,7 +203,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                 [
                     ft.PopupMenuButton(
                         items=[
-                            ft.PopupMenuItem(text="Supprimer le client", on_click=on_delete_client),
+                            ft.PopupMenuItem(text="Supprimer le client", on_click=lambda x: delete_client_confirm(mail)),
                             ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
                             ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: affichage_transac_client(mail, lvc, home_button))
                         ],
