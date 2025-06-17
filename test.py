@@ -1,99 +1,55 @@
-import flet as ft
+import sqlite3
+from db.utils import init_db, add_client, operate_solde, get_client_solde
+import random
+from datetime import datetime, timedelta
+import string
 
+def generate_random_name(min_length=4, max_length=8):
+    """Génère un nom aléatoire avec une longueur entre min_length et max_length"""
+    length = random.randint(min_length, max_length)
+    # Première lettre en majuscule, reste en minuscules
+    return ''.join(random.choice(string.ascii_lowercase) for _ in range(length)).capitalize()
 
-def main(page: ft.Page):
-    page.title = "Accueil"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.padding = 0
+def generate_random_email(nom, prenom):
+    """Génère un email aléatoire basé sur le nom et prénom"""
+    domains = ["gmail.com", "yahoo.fr", "hotmail.fr", "outlook.fr"]
+    return f"{prenom.lower()}.{nom.lower()}@{random.choice(domains)}"
 
-
-    def fab_pressed(e):
-        def validate_input(e):
-            if all([nom.value, prenom.value, mail.value]):
-                submit.disabled = False
-            else:
-                submit.disabled = True
-            page.update()
-
-        nom = ft.TextField(label="Nom", on_change=validate_input)
-        prenom = ft.TextField(label="Prenom", on_change=validate_input)
-        mail = ft.TextField(label="Mail", on_change=validate_input)
-        submit = ft.ElevatedButton(text="Ajouter", on_click=lambda x: add_list_tile(x), disabled=True)
-
-        def add_list_tile(e):
-            page.close(dlg)
-            page.add(
-                ft.Container(
-                    content=ft.ListTile(
-                        leading=ft.CircleAvatar(
-                            content=ft.Text(nom.value[0].upper()),
-                            bgcolor=ft.Colors.DEEP_ORANGE_300,
-                            radius=20,
-                        ),
-                        title=ft.Text(f"{prenom.value} {nom.value}", size=18, weight=ft.FontWeight.BOLD),
-                        subtitle=ft.Text(mail.value, size=14, italic=True),
-                        on_click=lambda x: print(f"{prenom.value} {nom.value} clicked!"),
-                    ),
-                    bgcolor=ft.Colors.TEAL_100,
-                    border_radius=12,
-                    padding=10,
-                    margin=5
-                )
-            )
-
-            page.open(ft.SnackBar(ft.Text("Client ajouté !")))
+def create_test_data(num_clients=200, transactions_per_client=500):
+    """Crée des données de test avec des clients et des transactions"""
+    # Initialiser la base de données
+    init_db()
+    
+    # Créer des clients
+    clients = []
+    for _ in range(num_clients):
+        nom = generate_random_name(5, 10)
+        prenom = generate_random_name(4, 8)
+        email = generate_random_email(nom, prenom)
+        solde_initial = random.randint(100, 500)
         
-        dlg = ft.AlertDialog(
-            title=ft.Text("Ajouter un nouveau client :"),
-            actions_overflow_button_spacing=10,
-            actions=[
-                nom,
-                prenom,
-                mail,
-                submit
-            ]
-        ) 
-        page.open(dlg)
+        if add_client(nom, prenom, email, solde_initial):
+            clients.append(email)
+            #print(f"Client créé: {prenom} {nom} ({email})")
+    
+    # Créer des transactions pour chaque client
+    operations = ["add", "remove"]
+    for email in clients:
+        for _ in range(transactions_per_client):
+            operation = random.choice(operations)
+            current_solde = get_client_solde(email)
+            
+            if operation == "add":
+                montant = round(random.uniform(5, 50), 2)
+            else:  # remove
+                max_remove = min(current_solde, 50)
+                montant = round(random.uniform(5, max_remove), 2)
+            
+            if operate_solde(email, montant, operation):
+                pass
 
+if __name__ == "__main__":
+    print("Génération des données de test...")
+    create_test_data()
+    print("Génération terminée!")
 
-    ajouter_btn = ft.FloatingActionButton(
-        icon=ft.Icons.ADD,
-        bgcolor=ft.Colors.LIME_300,
-        on_click=fab_pressed,
-        right=16,
-        bottom=16
-    )
-
-    rechercher_btn = ft.FloatingActionButton(
-        icon=ft.Icons.SEARCH,
-        bgcolor=ft.Colors.BLUE_300,
-        left=16,
-        bottom=16
-    )
-
-    page.overlay.append(
-        ft.Stack(
-            controls=[ajouter_btn, rechercher_btn],
-            expand=True
-        )
-    )
-
-    page.add(
-        ft.Container(
-            ft.Row(
-                [
-                    ft.Text(
-                        "Liste des clients",
-                        style=ft.TextStyle(size=20, weight=ft.FontWeight.W_500),
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            ),
-            bgcolor=ft.Colors.BLUE,
-            padding=ft.padding.all(20),
-        ),
-    )
-
-
-ft.app(main)

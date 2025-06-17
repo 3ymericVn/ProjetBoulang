@@ -39,8 +39,8 @@ def create_transaction_table(transac_cli: list[dict]) -> ft.DataTable:
         )
     return datatable
 
-def affichage_transac(page: ft.Page, lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
-    transacs = get_transactions()
+async def affichage_transac(page: ft.Page, lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
+    transacs = await get_transactions()
     lv2 = ft.ListView(spacing=10)
     datatable = create_transaction_table(transacs)
     lv2.controls.append(datatable)
@@ -51,7 +51,9 @@ def affichage_transac(page: ft.Page, lvc: ft.Container, lv: ft.ListView, boutton
     page.update()
 
 def affichage_clients(page: ft.Page, lvc: ft.Container, lv: ft.ListView, boutton_li_transac: ft.FloatingActionButton):
+    async def on_click(x):
+        await affichage_transac(page, lvc, lv, boutton_li_transac)
     lvc.content = lv
     boutton_li_transac.icon = ft.Icons.ASSESSMENT_OUTLINED
-    boutton_li_transac.on_click = lambda x : affichage_transac(page, lvc, lv, boutton_li_transac)
+    boutton_li_transac.on_click = on_click
     page.update() 

@@ -3,7 +3,7 @@ from assets import create_add_button, create_client_card, create_search_bar, cre
 from db import init_db, get_clients, get_transactions
 from mail import send_mail
 
-def main(page: ft.Page):
+async def main(page: ft.Page):
     #send_mail("test", "test", ["remi.avocat@gmail.com"])
     page.title = "Accueil"
     page.theme_mode = ft.ThemeMode.LIGHT
@@ -11,7 +11,7 @@ def main(page: ft.Page):
     page.padding = ft.padding.only(0, 0, 0, 0)
     page.window.frameless = False
 
-    init_db()
+    await init_db()
     lv = ft.ListView(spacing=10)
     lvc = ft.Container(
         content=lv,
@@ -19,15 +19,16 @@ def main(page: ft.Page):
     )
     
     boutton_li_transac = create_list_transac(page, lvc, lv, None)
-    boutton_ajout = create_add_button(page, lv, lvc, boutton_li_transac)
-    
-    boutton_li_transac.on_click = lambda x: affichage_transac(page, lvc, lv, boutton_li_transac)
+    boutton_ajout = await create_add_button(page, lv, lvc, boutton_li_transac)
+    async def blt_on_click(x):
+        await affichage_transac(page, lvc, lv, boutton_li_transac)
+    boutton_li_transac.on_click = blt_on_click
 
     page.update()
 
-    clients = get_clients()
+    clients = await get_clients()
     
-    search = create_search_bar(page, lv, lvc, boutton_li_transac)
+    search = await create_search_bar(page, lv, lvc, boutton_li_transac)
 
     page.add(
         ft.Container(
@@ -46,7 +47,7 @@ def main(page: ft.Page):
     )
     for client in clients:
         lv.controls.append(
-            create_client_card(client['nom'], client['prenom'], client['mail'], page, lv, lvc, boutton_li_transac)
+            await create_client_card(client['nom'], client['prenom'], client['mail'], page, lv, lvc, boutton_li_transac)
         )
     page.add(lvc)
 

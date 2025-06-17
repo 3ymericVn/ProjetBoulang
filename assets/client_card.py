@@ -41,11 +41,14 @@ def create_transaction_table(transac_cli: list[dict], home_button: ft.FloatingAc
         )
     return datatable
 
-def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView, lvc: ft.Container, home_button: ft.FloatingActionButton) -> ft.Container:
-    def on_click(e, radio_value, number_value):
-        if operate_solde(mail, number_value, radio_value):
+async def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView, lvc: ft.Container, home_button: ft.FloatingActionButton) -> ft.Container:
+    async def on_click(e):
+        await valider_click(e, radio.value, number_input.value)
+    
+    async def valider_click(e, radio_value, number_value):
+        if await operate_solde(mail, number_value, radio_value):
             page.close(popup)
-            solde_text.value = f"{get_client_solde(mail):.2f}€"
+            solde_text.value = f"{await get_client_solde(mail):.2f}€"
             page.open(ft.SnackBar(ft.Text(f"Le solde de {nom} {prenom} a été modifié.")))
             page.update()
         else:
@@ -182,20 +185,24 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
 
 
     def delete_client_confirm(mail):
+        async def delete_client2_click(e):
+            await delete_client2(mail)
+            page.close(dlg)
+
         dlg = ft.AlertDialog(
             title=ft.Text("Supprimer le client :"),
             content=ft.Text(f"Êtes-vous sûr de vouloir supprimer le client {nom} {prenom} ?"),
             actions=[
                 ft.TextButton(text="Annuler", on_click=lambda x: page.close(dlg)),
-                ft.TextButton(text="Supprimer", on_click=lambda x: (delete_client2(mail), page.close(dlg))),
+                ft.TextButton(text="Supprimer", on_click=delete_client2_click),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
         )
         page.open(dlg)
 
 
-    def delete_client2(mail):
-        solde = get_client_solde(mail)
+    async def delete_client2(mail):
+        solde = await get_client_solde(mail)
         if solde > 0:
             page.open(ft.SnackBar(
                 ft.Text(f"Le client {nom} {prenom} a un solde positif de {solde:.2f}€. Veuillez le débiter avant de le supprimer.")
@@ -205,7 +212,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
             page.open(ft.SnackBar(
                 ft.Text(f"Le client {nom} {prenom} a été supprimé.")
             ))
-            delete_client(mail)
+            await delete_client(mail)
             for i, c in enumerate(lv.controls):
                 l: ft.ListTile = c.content
                 if l.subtitle.value == mail:
@@ -223,7 +230,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                 submit.disabled = True
             page.update()
 
-        def on_edit_client_submit(e):
+        async def on_edit_client_submit(e):
             nonlocal nom, prenom, mail
             for c in lv.controls:
                 l: ft.ListTile = c.content
@@ -237,7 +244,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
 
             page.close(dlg)
 
-            if edit_client(t_mail.value, t_nom.value, t_prenom.value):
+            if await edit_client(t_mail.value, t_nom.value, t_prenom.value):
                 nom, prenom, mail = t_nom.value, t_prenom.value, t_mail.value
                 page.open(ft.SnackBar(ft.Text("Client modifié !")))
             else:
@@ -262,16 +269,15 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         )
         page.open(dlg)
 
-    solde_text = ft.Text(f"{get_client_solde(mail):.2f}€", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
+    solde_text = ft.Text(f"{await get_client_solde(mail):.2f}€", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
 
     def reset_value(e):
         radio.value = "sub"      
         number_input.value = ""     
         page.open(popup)
 
-    def affichage_transac_client(mail, lvc: ft.Container, home_button: ft.FloatingActionButton):
-
-        transac_cli = get_transactions_by_mail(mail)
+    async def affichage_transac_client(mail, lvc: ft.Container, home_button: ft.FloatingActionButton):
+        transac_cli = await get_transactions_by_mail(mail)
         lv3 = ft.ListView(spacing=10)
         datatable = create_transaction_table(transac_cli, home_button)
         lv3.controls.append(datatable)
@@ -279,7 +285,9 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
         home_button.icon = ft.Icons.HOME_FILLED
         home_button.on_click = lambda x : affichage_clients(page, lvc, lv, home_button)
         page.update()
-       
+
+    async def affichage_transac_client_click(x):
+        await affichage_transac_client(mail, lvc, home_button)
 
     return ft.Container(
         content=ft.ListTile(
@@ -293,7 +301,7 @@ def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.L
                         items=[
                             ft.PopupMenuItem(text="Supprimer le client", on_click=lambda x: delete_client_confirm(mail)),
                             ft.PopupMenuItem(text="Modifier le client", on_click=lambda x: on_edit_client(x, nom, prenom, mail)),
-                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=lambda x: affichage_transac_client(mail, lvc, home_button))
+                            ft.PopupMenuItem(text="Liste des transactions du client", on_click=affichage_transac_client_click)
                         ],
                         expand=True,
                     )
