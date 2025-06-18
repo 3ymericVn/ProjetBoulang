@@ -3,6 +3,11 @@ from db.utils import init_db, add_client, operate_solde, get_client_solde
 import random
 from datetime import datetime, timedelta
 import string
+import asyncio
+
+from env import DB
+
+CONNECTION = DB
 
 def generate_random_name(min_length=4, max_length=8):
     """Génère un nom aléatoire avec une longueur entre min_length et max_length"""
@@ -15,10 +20,10 @@ def generate_random_email(nom, prenom):
     domains = ["gmail.com", "yahoo.fr", "hotmail.fr", "outlook.fr"]
     return f"{prenom.lower()}.{nom.lower()}@{random.choice(domains)}"
 
-def create_test_data(num_clients=200, transactions_per_client=500):
+async def create_test_data(num_clients=20, transactions_per_client=5):
     """Crée des données de test avec des clients et des transactions"""
     # Initialiser la base de données
-    init_db()
+    await init_db()
     
     # Créer des clients
     clients = []
@@ -28,7 +33,7 @@ def create_test_data(num_clients=200, transactions_per_client=500):
         email = generate_random_email(nom, prenom)
         solde_initial = random.randint(100, 500)
         
-        if add_client(nom, prenom, email, solde_initial):
+        if await add_client(nom, prenom, email, solde_initial):
             clients.append(email)
             #print(f"Client créé: {prenom} {nom} ({email})")
     
@@ -37,7 +42,7 @@ def create_test_data(num_clients=200, transactions_per_client=500):
     for email in clients:
         for _ in range(transactions_per_client):
             operation = random.choice(operations)
-            current_solde = get_client_solde(email)
+            current_solde = await get_client_solde(email)
             
             if operation == "add":
                 montant = round(random.uniform(5, 50), 2)
@@ -45,11 +50,10 @@ def create_test_data(num_clients=200, transactions_per_client=500):
                 max_remove = min(current_solde, 50)
                 montant = round(random.uniform(5, max_remove), 2)
             
-            if operate_solde(email, montant, operation):
+            if await operate_solde(email, montant, operation):
                 pass
 
 if __name__ == "__main__":
     print("Génération des données de test...")
-    create_test_data()
+    asyncio.run(create_test_data())
     print("Génération terminée!")
-

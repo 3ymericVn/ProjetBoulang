@@ -27,7 +27,7 @@ async def main(page: ft.Page):
     page.update()
 
     clients = await get_clients()
-    
+
     search = await create_search_bar(page, lv, lvc, boutton_li_transac)
 
     page.add(
@@ -47,7 +47,7 @@ async def main(page: ft.Page):
     )
     for client in clients:
         lv.controls.append(
-            await create_client_card(client['nom'], client['prenom'], client['mail'], page, lv, lvc, boutton_li_transac)
+            create_client_card(client['nom'], client['prenom'], client['mail'], client['solde'], page, lv, lvc, boutton_li_transac)
         )
     page.add(lvc)
 

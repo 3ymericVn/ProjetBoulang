@@ -41,7 +41,7 @@ def create_transaction_table(transac_cli: list[dict], home_button: ft.FloatingAc
         )
     return datatable
 
-async def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv: ft.ListView, lvc: ft.Container, home_button: ft.FloatingActionButton) -> ft.Container:
+def create_client_card(nom: str, prenom: str, mail: str, solde: float, page: ft.Page, lv: ft.ListView, lvc: ft.Container, home_button: ft.FloatingActionButton) -> ft.Container:
     async def on_click(e):
         await valider_click(e, radio.value, number_input.value)
     
@@ -270,7 +270,7 @@ async def create_client_card(nom: str, prenom: str, mail: str, page: ft.Page, lv
         )
         page.open(dlg)
 
-    solde_text = ft.Text(f"{await get_client_solde(mail):.2f}€", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
+    solde_text = ft.Text(f"{solde:.2f}€", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
 
     def reset_value(e):
         radio.value = "sub"      

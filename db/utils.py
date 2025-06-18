@@ -29,7 +29,7 @@ async def init_db():
 async def get_clients() -> list[asyncpg.Record]:
     pool = await asyncpg.create_pool(CONNECTION)
     async with pool.acquire() as conn:
-        clients =await conn.fetch("SELECT * FROM clients")
+        clients = await conn.fetch("SELECT * FROM clients")
     await pool.close()
     return clients
 
