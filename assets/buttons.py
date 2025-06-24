@@ -2,7 +2,7 @@ import re
 import flet as ft
 from .client_card import create_client_card
 from .views import affichage_transac, affichage_clients, create_transaction_table
-from db import add_client, get_transactions 
+from db import add_client, get_transactions, get_client_solde
 
 EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 
@@ -35,8 +35,9 @@ async def fab_pressed(page: ft.Page, lv: ft.ListView, lvc: ft.Container, home_bu
         page.close(dlg)
         if not await add_client(nom.value, prenom.value, mail.value):
             return page.open(ft.SnackBar(ft.Text("Ce mail est déjà enregistré !")))
+        
         lv.controls.append(
-            await create_client_card(nom.value, prenom.value, mail.value, page, lv, lvc, home_button)
+            create_client_card(nom.value, prenom.value, mail.value, 0.0, page, lv, lvc, home_button)
         )
         page.update()
 
